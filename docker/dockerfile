@@ -1,0 +1,22 @@
+# 使用CUDA 12.1 + Python 3.10的官方镜像
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+
+# 配置国内软件源（加速依赖安装）
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 安装基础依赖
+RUN apt-get update && apt-get install -y \
+    python3.10 \
+    python3-pip \
+    git \
+    libgl1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# 配置PyTorch环境（兼容CUDA 12）
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+RUN pip install -r requirements.txt \
+    && cd metric_depth \
+    && pip install -r requirements.txt
+
+
